@@ -17,19 +17,18 @@ HashMap<HashMapElemType>::~HashMap()
 {
 	// ToDo: Destructor
 	// iteratively remove the alloacted memory
+	
 	for(int i = 0; i < capacity; i++)
 	{
 		HashMapElemType* elem = ht[i];
-		HashMapElemType* tmp;
-		while(elem->link != NULL)
+		while(elem != NULL)
 		{
-			tmp = elem;
+			HashMapElemType* tmp = elem;
 			elem = elem->link;
-			free(tmp)
+			free(tmp);
 		}
-		free(elem)
 	}
-	free(ht)
+	free(ht);
 }
 	
 template <class HashMapElemType>
@@ -41,16 +40,17 @@ HashMap<HashMapElemType>::find(const KeyType k)
 	unsigned int hashvalue = hashfunction(k);
 	HashMapElemType* elem = ht[hashvalue]; // init
 
-	while(elem->key != k)
+	while(elem != NULL)
 	{
 		// until exact key
-		elem = elem->link;
-	}
-
-	// exception handler, the case where hashvalue is in ht but no exact value.
-	if(elem-> key != k)
-	{
-		elem = NULL;
+		if( elem->key != k)
+		{
+			elem = elem->link;
+		}
+		else
+		{
+			break;
+		}
 	}
 
 	return elem;
@@ -61,25 +61,41 @@ void
 HashMap<HashMapElemType>::insert(const KeyType k, const ValType v) 
 {
 	// ToDo
-	unsinged int hashvalue = hashfunction(k);
-	HashMapElemType* newelem = new HashMapElemType(k, v); // correct grammar???
+	unsigned int hashvalue = hashfunction(k);
+	HashMapElemType* newelem = new HashMapElemType; // correct grammar???
+	newelem->key = k;
+	newelem->val = v;
+	newelem->link = NULL;
 	if (ht[hashvalue] != NULL)
 	{
 		if(ht[hashvalue]->key == k)
 		{ // overwrite
+			newelem->link = ht[hashvalue]->link;
 			ht[hashvalue] = newelem;	
 		}
 		else
 		{ // chaining
-			elem = ht[hashvalue]
-			while(elem->link != NULL)
+			HashMapElemType* elem = ht[hashvalue];
+ 			while(elem->link != NULL)
 			{
-				elem = elem->link
+				if( elem->key == k )
+				{
+					elem->val = v;
+					//ht[hashvalue] = elem;
+					// change only value
+					break;
+				}
+				elem = elem->link;
 			}
 			// after repeatition, elem become last node
-			elem->link = newElem;
-			// connect new element to last node where node have same hashvalue
-			mapsize += 1;
+			if( elem-> key == k )
+			{ // Do Nothing
+			}
+			else
+			{ // connect new element to last node where node have same hashvalue
+				elem->link = newelem;
+				mapsize += 1;
+			}
 		}
 	}
 	else
@@ -95,10 +111,10 @@ HashMap<HashMapElemType>::remove(const KeyType k)
 {
 	// ToDo	
 	unsigned int hashvalue = hashfunction(k);
-	if(ht[hashvalue] == NULL) { return false }
+	if(ht[hashvalue] == NULL) { return false; }
 
 	// find exact matching and need to control linked list for consistency
-	HashMapElemType* target = ht[hashvale]
+	HashMapElemType* target = ht[hashvalue];
 	HashMapElemType* prev;
 	while(target->key != k)
 	{
@@ -106,7 +122,7 @@ HashMap<HashMapElemType>::remove(const KeyType k)
 		target = target->link;
 	}
 	prev->link = target->link;
-	free(target)	
+	free(target);
 	mapsize -= 1;
 
 	return true;
@@ -134,8 +150,9 @@ HashMap<HashMapElemType>::print()
 	// ToDo: Print all Key:value pair in decreasing order of value
 	
 	// get all elements
-	HashMapElemType* listed = new HashMapElemType[mapsize];
+	HashMapElemType* listed[mapsize];
 	int pt = 0;
+	// hashmap to list so that can sort
 	for(int i = 0; i < capacity; i++)
 	{
 		HashMapElemType* elem = ht[i];
@@ -143,14 +160,28 @@ HashMap<HashMapElemType>::print()
 		{
 			listed[pt] = elem;
 			pt++;
-			elem->link = elem; // does not change the previous one? not sure
+			elem = elem->link;
 		}
 	}
 
 	// listed to be sorted
-	
-
+	for(int i = 0; i < mapsize-1; i++)
+	{
+		for(int j = i+1; j < mapsize; j++)
+		{
+			if( listed[i]->val < listed[j]->val )
+			{
+				HashMapElemType* tmp = listed[i];
+				listed[i] = listed[j];
+				listed[j] = tmp;
+			}
+		}
+	}
 	// print out
+	for(int i = 0; i < mapsize; i++)
+	{
+		std::cout << listed[i]->key << ":" << listed[i]->val << std::endl;	
+	}
 }
 
 

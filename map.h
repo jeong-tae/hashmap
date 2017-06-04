@@ -4,9 +4,9 @@
 #include <iostream>
 
 /** 
-  * Assignment 3 for CSE221 Data Structures
+  * ****************************
   *
-  * 2017. 4. 24
+  * 20**. **. **
   *
   */
 

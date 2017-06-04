@@ -1,11 +1,14 @@
 #include "wordfrequency.h"
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
 
 /** 
- * Assignment 6 for CSE231 Data Structures
+ * ***************************
  *
- * 2014. 1. 16
+ * ****. **. **
  *
  */
 
@@ -21,32 +24,44 @@ WordFrequency::~WordFrequency()
 
 void WordFrequency::ReadText(const char* filename)
 {
-	// ToDo
-	ifstream fin(filename);
-	string s;
+	std::ifstream fin(filename);
+	std::string s;
 	if ( fin.is_open() )
 	{
-		
-		fin >> s;
-		istringstream iss(s);
-		do
+		while(std::getline(fin, s))
 		{
-			string sub;
-			iss >> sub;
-			std::transform(sub.begin(), sub.end(), sub.begin(), ::tolower);
-		} while(iss);
-		
+			std::istringstream iss(s);
+			do
+			{
+				std::string word;
+				iss >> word;
+				std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+				IncreaseFrequency(word);
+			} while(iss);
+		}
 	}
 }
 
 int WordFrequency::GetFrequency(const std::string word)
 {
-	// ToDo
-	
+	WordFreqElem* elem = map.find(word);
+	if( elem != NULL )
+	{
+		return elem->val;
+	}	
 	return 0;
 }
 
 void WordFrequency::IncreaseFrequency(const std::string word)
 {
-	// ToDo
+	WordFreqElem* elem = map.find(word);
+        if( elem != NULL )
+        {
+		int val = elem->val + 1;
+		map.insert(word, val);
+	}
+	else
+	{
+		map.insert(word, 1);
+	}
 }

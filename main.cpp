@@ -18,6 +18,5 @@ int main()
 	
 	cout << "Print all result" << endl;
 	freqChecker.PrintAllFrequency();
-	
 	return 0;
 }
